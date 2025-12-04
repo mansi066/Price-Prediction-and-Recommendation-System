@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Price Prediction - AI Real Estate Valuation</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Added Font Awesome for social icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: #6c63ff;
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .header h1 {    
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 40px;
+        }
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+        .section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            border: 1px solid #e9ecef;
+        }
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+        select, input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        select:focus, input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #6c63ff 0%, #667eea 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(109, 14, 203, 0.4);
+        }
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .results {
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .result-item {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            transition: transform 0.2s ease;
+        }
+        .result-item:hover {
+            transform: translateX(5px);
+            border-color: #3498db;
+        }
+        .property-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .distance {
+            color: #27ae60;
+            font-weight: 500;
+        }
+        .similarity {
+            color: #e74c3c;
+            font-weight: 500;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 1px solid #f5c6cb;
+        }
+        .success {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 1px solid #bee5eb;
+        }
+    </style>
+
+</head>
+<body>
+    <!-- Added sticky navbar with logo -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-logo">
+                <i class="fas fa-home"></i>
+                <span>Property Price Predict</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#predict" class="nav-link" id="navPredictBtn">Predict</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1 class="hero-title">Easy Way to Predict Your Property Price</h1>
+            <p class="hero-subtitle">Estimate your property value accurately with AI.</p>
+<button id="predict-now-btn" class="btn btn-primary">Predict Now</button>
+        </div>
+        <div class="hero-image">
+        </div>
+    </section>
+<section class="prediction" id="predict">
+  <div class="container">
+        <div class="header">
+            <h1> Property Price Predictor</h1>
+            <p>Get accurate price predictions for your property</p>
+        </div>
+
+        <div class="form-section">
+            <form id="prediction-form">
+                <div class="form-grid">
+                    <!-- Property Type -->
+                    <div class="form-group">
+                        <label for="property_type">Property Type *</label>
+                        <select id="property_type" required>
+                            <option value="">Select Property Type</option>
+                        </select>
+                    </div>
+
+                    <!-- Sector -->
+                    <div class="form-group">
+                        <label for="sector">Sector *</label>
+                        <select id="sector" required>
+                            <option value="">Select Sector</option>
+                        </select>
+                    </div>
+
+                    <!-- Bedrooms -->
+                    <div class="form-group">
+                        <label for="bedRoom">Bedrooms *</label>
+                        <input type="number" id="bedRoom" min="1" max="10" value="3" required>
+                    </div>
+
+                    <!-- Bathrooms -->
+                    <div class="form-group">
+                        <label for="bathroom">Bathrooms *</label>
+                        <input type="number" id="bathroom" min="1" max="10" value="2" required>
+                    </div>
+
+                    <!-- Balcony -->
+                    <div class="form-group">
+                        <label for="balcony">Balcony</label>
+                        <input type="number" id="balcony" min="0" max="5" value="2">
+                    </div>
+
+                    <!-- Age Possession -->
+                    <div class="form-group">
+                        <label for="agePossession">Age Possession *</label>
+                        <select id="agePossession" required>
+                            <option value="">Select Age</option>
+                        </select>
+                    </div>
+
+                    <!-- Built-up Area -->
+                    <div class="form-group">
+                        <label for="built_up_area">Built-up Area (sq ft) *</label>
+                        <input type="number" id="built_up_area" min="100" max="10000" value="1800" step="50" required>
+                    </div>
+
+                    <!-- Servant Room -->
+                    <div class="form-group">
+                        <label for="servant_room">Servant Room</label>
+                        <input type="number" id="servant_room" min="0" max="2" value="0">
+                    </div>
+
+                    <!-- Store Room -->
+                    <div class="form-group">
+                        <label for="store_room">Store Room</label>
+                        <input type="number" id="store_room" min="0" max="2" value="1">
+                    </div>
+
+                    <!-- Furnishing Type -->
+                    <div class="form-group">
+                        <label for="furnishing_type">Furnishing Type *</label>
+                        <select id="furnishing_type" required>
+                            <option value="">Select Furnishing</option>
+                        </select>
+                    </div>
+
+                    <!-- Luxury Category -->
+                    <div class="form-group">
+                        <label for="luxury_category">Luxury Category *</label>
+                        <select id="luxury_category" required>
+                            <option value="">Select Luxury Category</option>
+                        </select>
+                    </div>
+
+                    <!-- Floor Category -->
+                    <div class="form-group">
+                        <label for="floor_category">Floor Category *</label>
+                        <select id="floor_category" required>
+                            <option value="">Select Floor Category</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" id="predict-button" class="btn btn-primary">
+                        Predict Price
+                    </button>
+                    <button type="button" id="reset-button" class="btn-primary">
+                        Reset Form
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="result-section">
+            <div id="prediction-result"></div>
+        </div>
+    </div>
+</section>
+
+    <div class="container">
+        <div class="header">
+            <h1> Property Recommendation System</h1>
+            <p>Find properties by location and get intelligent recommendations</p>
+        </div>
+        
+        <div class="content">
+            <!-- Location Search Section -->
+            <div class="section">
+                <h2> Search by Location & Radius</h2>
+                <div class="form-group">
+                    <label for="location">Select Location:</label>
+                    <select id="location">
+                        <option value="">Loading locations...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="radius">Radius (in Kilometers):</label>
+                    <input type="number" id="radius" min="0.1" max="50" step="0.1" value="5" placeholder="Enter radius in km">
+                </div>
+                <button id="search-btn" onclick="searchLocation()">Search Properties</button>
+                <div id="location-results" class="results"></div>
+            </div>
+
+            <!-- Recommendation Section -->
+            <div class="section">
+                <h2> Get Property Recommendations</h2>
+                <div class="form-group">
+                    <label for="property">Select Property:</label>
+                    <select id="property">
+                        <option value="">Loading properties...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="top-n">Number of Recommendations:</label>
+                    <input type="number" id="top-n" min="1" max="20" value="5" placeholder="Number of recommendations">
+                </div>
+                <button id="recommend-btn" onclick="getRecommendations()"> Get Recommendations</button>
+                <div id="recommendation-results" class="results"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="recommendation.js"></script>
+
+    <!-- About Us Section -->
+    <section class="about" id="about">
+        <h2 class="section-title">About Us</h2>
+        <div class="about-grid">
+            <div class="about-card">
+                <div class="card-icon">✓</div>
+                <h3>Accurate Predictions</h3>
+                <p>Our AI-powered algorithm analyzes market data to provide precise property valuations.</p>
+            </div>
+            <div class="about-card">
+                <div class="card-icon">★</div>
+                <h3>User Friendly</h3>
+                <p>Simple and intuitive interface designed for everyone, no technical knowledge required.</p>
+            </div>
+            <div class="about-card">
+                <div class="card-icon">👥</div>
+                <h3>Expert Team</h3>
+                <p>Backed by real estate professionals with years of industry experience.</p>
+            </div>
+            <div class="about-card">
+                <div class="card-icon">⚡</div>
+                <h3>Fast Results</h3>
+                <p>Get instant property valuations in seconds, not hours or days.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Added footer with social icons -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <h3>Property Price Predict</h3>
+                <p>Your trusted partner in real estate valuation</p>
+            </div>
+            <div class="footer-social">
+                <a href="#" class="social-icon" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="social-icon" title="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="social-icon" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                <a href="#" class="social-icon" title="Instagram"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Property Price Predict. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- <script src="script.js"></script> -->
+    <script src="predict.js"></script>
+
+</body>
+</html>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const predictNowBtn = document.getElementById("predict-now-btn");
+  const predictSection = document.getElementById("btn");
+
+  if (predictNowBtn && predictSection) {
+    predictNowBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      predictSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+});
+
+
+
+</script>

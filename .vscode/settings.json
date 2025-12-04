@@ -1,0 +1,7 @@
+{
+  "python.defaultInterpreterPath": "C:/Price-prediction/venv/Scripts/python.exe",
+  "python.analysis.extraPaths": [
+    "C:/Price-prediction/venv/Lib/site-packages"
+  ],
+  "python.languageServer": "Pylance"
+}
