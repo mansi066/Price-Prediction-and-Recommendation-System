@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { MapPin, Lightbulb, Search, Users, Navigation, Star, Home, AlertCircle, Loader2 } from "lucide-react"
+import { MapPin, Lightbulb, Search, Users, Navigation, Star, Home, AlertCircle, Loader2, X } from "lucide-react"
 import { useRecommendation } from "@/hooks/use-recommendation"
 
 interface LocationResult {
@@ -29,7 +29,12 @@ interface GetRecommendationsResponse {
   recommendations: RecommendationResult[]
 }
 
-export default function PropertyRecommendation() {
+interface PropertyRecommendationProps {
+  isOpen?: boolean
+  onClose?: () => void
+}
+
+export default function PropertyRecommendation({ isOpen = false, onClose }: PropertyRecommendationProps) {
   const { 
     searchLocation, 
     getRecommendations, 
@@ -78,9 +83,38 @@ export default function PropertyRecommendation() {
     setSearchType(null)
   }
 
+  const handleClose = () => {
+    handleReset()
+    onClose?.()
+  }
+
+  // Modal overlay - shows when isOpen is true
+  if (!isOpen) {
+    return null
+  }
+
   return (
-    <section className="py-16 px-4 bg-gradient-to-b from-blue-50 to-white" id="recommendation">
-      <div className="max-w-7xl mx-auto">
+    <div className="fixed inset-0 z-50 overflow-y-auto">
+      {/* Overlay backdrop */}
+      <div
+        className="fixed inset-0 bg-white bg-opacity-50 transition-opacity"
+        onClick={handleClose}
+      />
+
+      {/* Modal content */}
+      <div className="relative min-h-screen flex items-center justify-center py-4 px-4">
+        <div className="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          {/* Close button */}
+          <button
+            onClick={handleClose}
+            className="absolute top-4 right-4 z-10 p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <X className="h-6 w-6" />
+          </button>
+
+          {/* Modal body */}
+          <div className="py-16 px-4 bg-white">
+            <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-3 mb-4">
@@ -101,7 +135,7 @@ export default function PropertyRecommendation() {
               <div className="p-2 bg-blue-100 rounded-lg">
                 <MapPin className="h-6 w-6 text-blue-600" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">📍 Search by Location & Radius</h2>
+              <h2 className="text-2xl font-bold text-gray-900"> Search by Location & Radius</h2>
             </div>
             
             <form onSubmit={handleLocationSearch}>
@@ -197,7 +231,6 @@ export default function PropertyRecommendation() {
                 <div className="space-y-3 max-h-96 overflow-y-auto pr-2">
                   {locationResults.results.length === 0 ? (
                     <div className="text-center py-8 text-gray-500">
-                      <div className="text-3xl mb-2">🏡</div>
                       <p>No properties found in this radius</p>
                       <p className="text-sm mt-1">Try increasing the search radius</p>
                     </div>
@@ -240,7 +273,7 @@ export default function PropertyRecommendation() {
               <div className="p-2 bg-purple-100 rounded-lg">
                 <Lightbulb className="h-6 w-6 text-purple-600" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">🤖 Get Property Recommendations</h2>
+              <h2 className="text-2xl font-bold text-gray-900">Get Property Recommendations</h2>
             </div>
 
             <form onSubmit={handleGetRecommendations}>
@@ -321,7 +354,7 @@ export default function PropertyRecommendation() {
               <div className="mt-8">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900">
-                    🤖 AI Recommendations
+                     AI Recommendations
                   </h3>
                   <span className="px-3 py-1 bg-purple-100 text-purple-800 text-sm font-medium rounded-full">
                     Top {recommendationResults.recommendations.length} matches
@@ -429,7 +462,10 @@ export default function PropertyRecommendation() {
             Reset All
           </button>
         </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </section>
+    </div>
   )
 }

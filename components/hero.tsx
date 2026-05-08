@@ -1,5 +1,7 @@
 "use client"
 
+import Image from "next/image"
+
 export default function Hero() {
   const handlePredictClick = () => {
     const element = document.getElementById("predict")
@@ -24,12 +26,19 @@ export default function Hero() {
         </button>
       </div>
       <div
-        className="flex-1 h-96 bg-center bg-cover rounded-xl shadow-2xl"
+        className="flex-1 relative h-96 rounded-xl shadow-2xl overflow-hidden"
         style={{
           animation: "fadeInRight 0.8s ease",
-          backgroundImage: "url(/placeholder.svg?height=500&width=500&query=modern-property-building)",
         }}
-      ></div>
+      >
+        <Image
+          src="/house-for-sale.png"
+          alt="Property for sale"
+          fill
+          priority
+          className="object-contain"
+        />
+      </div>
     </section>
   )
 }

@@ -7,15 +7,21 @@ import Link from "next/link"
 
 interface NavbarProps {
   onRecommendationClick?: () => void
+  onCloseRecommendation?: () => void
 }
 
-export default function Navbar({ onRecommendationClick }: NavbarProps) {
+export default function Navbar({ onRecommendationClick, onCloseRecommendation }: NavbarProps) {
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault()
-    const element = document.getElementById(id)
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" })
-    }
+    // Close recommendation modal if open
+    onCloseRecommendation?.()
+    // Small delay to ensure modal closes before scrolling
+    setTimeout(() => {
+      const element = document.getElementById(id)
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "start" })
+      }
+    }, 100)
   }
 
   return (

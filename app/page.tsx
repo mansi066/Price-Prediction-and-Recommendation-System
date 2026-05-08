@@ -13,7 +13,10 @@ export default function Home() {
 
   return (
     <main className="w-full">
-      <Navbar onRecommendationClick={() => setIsRecommendationOpen(true)} />
+      <Navbar 
+        onRecommendationClick={() => setIsRecommendationOpen(true)}
+        onCloseRecommendation={() => setIsRecommendationOpen(false)}
+      />
       <Hero />
       <PricePrediction />
       <PropertyRecommendation isOpen={isRecommendationOpen} onClose={() => setIsRecommendationOpen(false)} />
